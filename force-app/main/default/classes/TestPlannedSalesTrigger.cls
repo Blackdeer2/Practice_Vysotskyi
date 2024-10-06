@@ -1,6 +1,5 @@
 @IsTest
-private class TestUniquePlannedSalesTrigger {
-
+private class TestPlannedSalesTrigger {
     @TestSetup
     static void Setup(){
         Planned_Sales__c ps1 = new Planned_Sales__c();
@@ -41,7 +40,4 @@ private class TestUniquePlannedSalesTrigger {
         }
         Test.stopTest();
     }
-
-    
-
 }
