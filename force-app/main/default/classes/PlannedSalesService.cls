@@ -7,8 +7,8 @@ public with sharing class PlannedSalesService {
         FROM Planned_Sales__c 
         ];
 
-        for (Planned_Sales__c ps : triggerNew) {
-            for (Planned_Sales__c  existingRecord : existingRecords) {
+        for (Planned_Sales__c ps : triggerNew){
+            for (Planned_Sales__c  existingRecord : existingRecords){
                 if(existingRecord.Year__c == ps.Year__c &&
                    existingRecord.Month__c == ps.Month__c &&
                    existingRecord.Car_Type__c == ps.Car_Type__c &&
@@ -18,6 +18,5 @@ public with sharing class PlannedSalesService {
                 }
             }
         }
-
     }
 }

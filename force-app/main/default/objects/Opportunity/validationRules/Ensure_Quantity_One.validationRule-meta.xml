@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ensure_Quantity_One</fullName>
+    <active>true</active>
+    <description>Ensures that the quantity of a Car (Product) added to an Opportunity is always 1.</description>
+    <errorConditionFormula>AND( TotalOpportunityQuantity &lt;&gt; 1)</errorConditionFormula>
+    <errorDisplayField>TotalOpportunityQuantity</errorDisplayField>
+    <errorMessage>The quantity for a Car must be 1.</errorMessage>
+</ValidationRule>

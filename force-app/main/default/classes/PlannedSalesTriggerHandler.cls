@@ -1,63 +1,62 @@
-public with sharing class PlannedSalesTriggerHandler {
+public with sharing class PlannedSalesTriggerHandler extends TriggerHandler {
 
-    private boolean m_isExecuting = false;
-    private integer BatchSize = 0;
-    public static boolean IsFromBachJob ;
-    public static boolean isFromUploadAPI=false;
+    private List<Planned_Sales__c> triggerNew;
+    private List<Planned_Sales__c> triggerOld;
+    private Map<Id, Planned_Sales__c> triggerMapNew;
+    private Map<Id, Planned_Sales__c> triggerMapOld;
     
-    public PlannedSalesTriggerHandler(boolean isExecuting, integer size)
-    {
-        m_isExecuting = isExecuting;
-        BatchSize = size;
-    }
-
-    public void OnBeforeInsert(List<Planned_Sales__c> newPlannedSales)
-    {
-        system.debug('PlannedSales Trigger On Before Insert');
-        PlannedSalesService.uniquePlannedSales(newPlannedSales);
-    }
-    public void OnAfterInsert(List<Planned_Sales__c> newPlannedSales)
-    {
-        system.debug('PlannedSales Trigger On After Insert');
-    }
-    public void OnAfterUpdate( List<Planned_Sales__c> newPlannedSales, 
-                               List<Planned_Sales__c> oldPlannedSales, 
-                               Map<ID, Planned_Sales__c> newPlannedSalesMap , 
-                               Map<ID, Planned_Sales__c> oldPlannedSalesMap )
-    {
-        system.debug('PlannedSales Trigger On After Update ');
-    }
-    public void OnBeforeUpdate( List<Planned_Sales__c> newPlannedSales, 
-                                List<Planned_Sales__c> oldPlannedSales, 
-                                Map<ID, Planned_Sales__c> newPlannedSalesMap , 
-                                Map<ID, Planned_Sales__c> oldPlannedSalesMap )
-    {
-        system.debug('PlannedSales Trigger On Before Update ');
-        PlannedSalesService.uniquePlannedSales(newPlannedSales);
+    public PlannedSalesTriggerHandler() {
+        this.triggerOld = (List<Planned_Sales__c>) Trigger.old;
+        this.triggerNew = (List<Planned_Sales__c>) Trigger.new;
+        this.triggerMapNew = (Map<Id, Planned_Sales__c>) Trigger.newMap;
+        this.triggerMapOld = (Map<Id, Planned_Sales__c>) Trigger.oldMap;
     }
 
-    @future 
-    public static void OnAfterUpdateAsync(Set<ID> newPlannedSalesIDs)
-    {
+    public override void beforeInsert() {
 
-    }      
-    public boolean IsTriggerContext
-    {
-        get{ return m_isExecuting;}
+         PlannedSalesService.uniquePlannedSales(this.triggerNew);
     }
-    
-    public boolean IsVisualforcePageContext
-    {
-        get{ return !IsTriggerContext;}
+
+    public override void afterInsert() {
+
+       try {
+        PlannedSalesHelper.updateCarSales(this.triggerMapNew);
+        } catch (DmlException e) {
+            
+            System.debug('Error updating Planned Sales: ' + e.getMessage());
+        }
+
     }
-    
-    public boolean IsWebServiceContext
-    {
-        get{ return !IsTriggerContext;}
+
+    public override void beforeUpdate() {
+        
+        PlannedSalesHelper.updateCarSales(this.triggerMapNew);
+
     }
-    
-    public boolean IsExecuteAnonymousContext
-    {
-        get{ return !IsTriggerContext;}
+
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    public override void afterUpdate() {
+
+       
+        PlannedSalesService.uniquePlannedSales(this.triggerNew);
+        // try {
+        //     PlannedSalesHelper.updateCarSales(this.triggerMapNew);
+        // } catch (DmlException e) {
+        //     System.debug('Error updating Planned Sales: ' + e.getMessage());
+        // }
+        
     }
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    public override void beforeDelete() {
+
+    }
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    public override void afterDelete() {
+
+    }
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    public override void afterUndelete() {
+
+    }
+
 }

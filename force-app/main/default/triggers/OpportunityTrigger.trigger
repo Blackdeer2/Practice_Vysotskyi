@@ -1,4 +1,4 @@
-trigger PlannedSalesTrigger on Planned_Sales__c (before insert, before update, after insert, after update) {
+trigger OpportunityTrigger on Opportunity (before insert) {
 
     PlannedSalesTriggerHandler handler = new PlannedSalesTriggerHandler();
 
@@ -19,6 +19,5 @@ trigger PlannedSalesTrigger on Planned_Sales__c (before insert, before update, a
             handler.afterUpdate();
         }
     }
-
 
 }
