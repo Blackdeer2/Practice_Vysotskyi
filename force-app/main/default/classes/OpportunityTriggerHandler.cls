@@ -35,6 +35,8 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterUpdate() {
 
+        OpportunityService.automateCarStatus(this.triggerMapNew, this.triggerMapOld);
+
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')

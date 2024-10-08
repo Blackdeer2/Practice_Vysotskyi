@@ -1,6 +1,7 @@
-trigger OpportunityTrigger on Opportunity (before insert) {
+trigger OpportunityTrigger on Opportunity (before insert, before update, after insert, after update) {
 
-    PlannedSalesTriggerHandler handler = new PlannedSalesTriggerHandler();
+    PlannedSalesHelper helper = new PlannedSalesHelper();
+    OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
 
 
     if( Trigger.isInsert ){
