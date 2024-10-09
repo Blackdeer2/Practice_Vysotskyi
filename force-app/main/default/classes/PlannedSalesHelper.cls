@@ -54,10 +54,9 @@ public with sharing class PlannedSalesHelper {
 
     public static void updateCarSalesByOpportunity(List<Opportunity> opportunities){
 
-        if(opportunities.isEmpty()) return;
+        if (opportunities.isEmpty()) return;
 
         Set<Id> oppIds = new Set<Id>();
-
         for (Opportunity opp : opportunities) {
             oppIds.add(opp.Id);
         }
@@ -67,38 +66,33 @@ public with sharing class PlannedSalesHelper {
                                                   FROM OpportunityLineItem 
                                                   WHERE OpportunityId IN :oppIds];
 
-        List<Planned_Sales__c> plannesSales = [SELECT Id, Year__c, Month__c, Car_Type__c
+        Map<Id, Planned_Sales__c> plannedSalesMap = new Map<Id, Planned_Sales__c>();
+        List<Planned_Sales__c> plannedSales = [SELECT Id, Year__c, Month__c, Car_Type__c 
                                                 FROM Planned_Sales__c];
 
-
-        Integer countOfCarsSold; 
-        Double totalAmountEarned;
-
-
-        for (Planned_Sales__c ps : plannesSales) {
-
-                countOfCarsSold = 0; 
-                totalAmountEarned = 0.0;
-
-            for (OpportunityLineItem opp : oppLineItems) {
-
-                System.debug('Processing OpportunityLineItem: ' + opp.Id);
-
-                if ( dateComparison(ps.Year__c, ps.Month__c, opp.Opportunity.CloseDate) && opp.Product2.Condition__c == ps.Car_Type__c) {
-
-                    countOfCarsSold++;
-                    totalAmountEarned += opp.Opportunity.Amount;
-                }
-            }
-            ps.Count_of_Cars_Sold__c = (countOfCarsSold > 0) ? countOfCarsSold : 0;
-            ps.Total_Amount_Earned__c = (totalAmountEarned > 0) ? totalAmountEarned : 0;
-
+        for (Planned_Sales__c ps : plannedSales) {
+            plannedSalesMap.put(ps.Id, ps);
         }
-        
-       
-            update plannesSales;
-        
 
+            // Logic to calculate count of cars sold and total amount earned
+    for (Planned_Sales__c ps : plannedSalesMap.values()) {
+        Integer countOfCarsSold = 0; 
+        Double totalAmountEarned = 0.0;
 
+        for (OpportunityLineItem opp : oppLineItems) {
+            if (dateComparison(ps.Year__c, ps.Month__c, opp.Opportunity.CloseDate) && 
+                opp.Product2.Condition__c == ps.Car_Type__c) {
+                countOfCarsSold++;
+                totalAmountEarned += opp.Opportunity.Amount;
+            }
+        }
+
+        ps.Count_of_Cars_Sold__c = countOfCarsSold > 0 ? countOfCarsSold : 0;
+        ps.Total_Amount_Earned__c = totalAmountEarned > 0 ? totalAmountEarned : 0;
+    }
+
+    
+    update plannedSalesMap.values();
+        
     }
 }

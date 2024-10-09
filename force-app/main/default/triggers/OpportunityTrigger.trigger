@@ -1,24 +1,35 @@
-trigger OpportunityTrigger on Opportunity (before insert, before update, after insert, after update) {
+trigger OpportunityTrigger on Opportunity (before insert, before update, after insert, after update, before delete, after delete) {
 
-    PlannedSalesHelper helper = new PlannedSalesHelper();
     OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
 
 
-    if( Trigger.isInsert ){
-        if(Trigger.isBefore) {
-            handler.beforeInsert();
+    try{
+        if( Trigger.isInsert ){
+            if(Trigger.isBefore) {
+                handler.beforeInsert();
+            }
+            else {
+                handler.afterInsert();
+            }
         }
-        else {
-            handler.afterInsert();
+        else if ( Trigger.isUpdate ) {
+            if(Trigger.isBefore){
+                handler.beforeUpdate();
+            }
+            else{
+                handler.afterUpdate();
+            }
         }
-    }
-    else if ( Trigger.isUpdate ) {
-        if(Trigger.isBefore){
-            handler.beforeUpdate();
+        else if ( Trigger.isDelete ) {
+            if(Trigger.isBefore){
+                handler.beforeDelete();
+            }
+            else{
+                handler.afterDelete();
+            }
         }
-        else{
-            handler.afterUpdate();
-        }
+    }catch (Exception e) {
+        System.debug('Error in PlannedSalesTrigger: ' + e.getMessage());
     }
 
 }

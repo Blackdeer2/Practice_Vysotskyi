@@ -2,22 +2,25 @@ trigger PlannedSalesTrigger on Planned_Sales__c (before insert, before update, a
 
     PlannedSalesTriggerHandler handler = new PlannedSalesTriggerHandler();
 
-
-    if( Trigger.isInsert ){
-        if(Trigger.isBefore) {
-            handler.beforeInsert();
+    try{
+        if( Trigger.isInsert ){
+            if(Trigger.isBefore) {
+                handler.beforeInsert();
+            }
+            else {
+                handler.afterInsert();
+            }
         }
-        else {
-            handler.afterInsert();
+        else if ( Trigger.isUpdate ) {
+            if(Trigger.isBefore){
+                handler.beforeUpdate();
+            }
+            else{
+                handler.afterUpdate();
+            }
         }
-    }
-    else if ( Trigger.isUpdate ) {
-        if(Trigger.isBefore){
-            handler.beforeUpdate();
-        }
-        else{
-            handler.afterUpdate();
-        }
+    }catch (Exception e) {
+        System.debug('Error in PlannedSalesTrigger: ' + e.getMessage());
     }
 
 

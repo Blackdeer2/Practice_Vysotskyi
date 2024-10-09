@@ -19,37 +19,21 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
     }
 
     public override void beforeUpdate() {
-        List<Opportunity> closedWonOpportunities = new List<Opportunity>();
-        for (Opportunity opp : this.triggerNew) {
-            if (opp.StageName == 'Closed Won') {
-                closedWonOpportunities.add(opp);
-            }
-        }
-
-        if (!closedWonOpportunities.isEmpty()) {
-            PlannedSalesHelper.updateCarSalesByOpportunity(closedWonOpportunities);
-        }
 
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterUpdate() {
 
-        OpportunityService.automateCarStatus(this.triggerMapNew, this.triggerMapOld);
-
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void beforeDelete() {
-        List<Opportunity> deletedOpportunities = Trigger.old;
-        if (!deletedOpportunities.isEmpty()) {
-            PlannedSalesHelper.updateCarSalesByOpportunity(deletedOpportunities);
-        }
+
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterDelete() {
-
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
