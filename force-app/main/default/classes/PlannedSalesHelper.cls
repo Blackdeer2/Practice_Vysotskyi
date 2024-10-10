@@ -52,47 +52,54 @@ public with sharing class PlannedSalesHelper {
     }
 
 
-    public static void updateCarSalesByOpportunity(List<Opportunity> opportunities){
+    public static void updateCarSalesByOpportunity(Map<Id, Opportunity> opportunities){
 
         if (opportunities.isEmpty()) return;
-
-        Set<Id> oppIds = new Set<Id>();
-        for (Opportunity opp : opportunities) {
-            oppIds.add(opp.Id);
-        }
 
         List<OpportunityLineItem> oppLineItems = [SELECT Opportunity.Id, Opportunity.CloseDate, Opportunity.Amount, 
                                                          Product2.Condition__c 
                                                   FROM OpportunityLineItem 
-                                                  WHERE OpportunityId IN :oppIds];
+                                                  WHERE OpportunityId IN :opportunities.keySet()];
+        
 
-        Map<Id, Planned_Sales__c> plannedSalesMap = new Map<Id, Planned_Sales__c>();
+
         List<Planned_Sales__c> plannedSales = [SELECT Id, Year__c, Month__c, Car_Type__c 
                                                 FROM Planned_Sales__c];
+        Map<String, Planned_Sales__c> plannedSalesMap = new Map<String, Planned_Sales__c>();
 
+
+
+
+        String planesSalesKey;
         for (Planned_Sales__c ps : plannedSales) {
-            plannedSalesMap.put(ps.Id, ps);
+            planesSalesKey = ps.Year__c + '-' + ps.Month__c + '-' + ps.Car_Type__c;
+            plannedSalesMap.put(planesSalesKey, ps);
         }
 
-            // Logic to calculate count of cars sold and total amount earned
-    for (Planned_Sales__c ps : plannedSalesMap.values()) {
-        Integer countOfCarsSold = 0; 
-        Double totalAmountEarned = 0.0;
+        String opportunitykey;
+        for (OpportunityLineItem oli: oppLineItems) {
 
-        for (OpportunityLineItem opp : oppLineItems) {
-            if (dateComparison(ps.Year__c, ps.Month__c, opp.Opportunity.CloseDate) && 
-                opp.Product2.Condition__c == ps.Car_Type__c) {
-                countOfCarsSold++;
-                totalAmountEarned += opp.Opportunity.Amount;
-            }
         }
 
-        ps.Count_of_Cars_Sold__c = countOfCarsSold > 0 ? countOfCarsSold : 0;
-        ps.Total_Amount_Earned__c = totalAmountEarned > 0 ? totalAmountEarned : 0;
-    }
+        for (Planned_Sales__c ps : plannedSalesMap.values()) {
+            
+            for (OpportunityLineItem oli : oppLineItems) {
+
+                opportunitykey = oli.Opportunity.CloseDate.year() + '-' + oli.Opportunity.CloseDate.month() + '-' + oli.Product2.Condition__c; // переписати інт в стрінг
+
+                
+                if (plannedSalesMap.containsKey(opportunitykey)) {
+                    ps.Count_of_Cars_Sold__c += 1;
+                    ps.Total_Amount_Earned__c += oli.TotalPrice;
+    
 
     
-    update plannedSalesMap.values();
+                }
+            }
+            
+        }
+    
+                update plannedSalesMap.values();
         
     }
 }

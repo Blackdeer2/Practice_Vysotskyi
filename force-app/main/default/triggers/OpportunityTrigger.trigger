@@ -2,8 +2,6 @@ trigger OpportunityTrigger on Opportunity (before insert, before update, after i
 
     OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
 
-
-    try{
         if( Trigger.isInsert ){
             if(Trigger.isBefore) {
                 handler.beforeInsert();
@@ -28,8 +26,5 @@ trigger OpportunityTrigger on Opportunity (before insert, before update, after i
                 handler.afterDelete();
             }
         }
-    }catch (Exception e) {
-        System.debug('Error in PlannedSalesTrigger: ' + e.getMessage());
-    }
 
 }

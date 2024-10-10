@@ -14,7 +14,7 @@ trigger OpportunityLineItemTrigger on OpportunityLineItem (before insert, before
     else if ( Trigger.isUpdate ) {
         if(Trigger.isBefore){
             handler.beforeUpdate();
-        }
+        } 
         else{
             handler.afterUpdate();
         }

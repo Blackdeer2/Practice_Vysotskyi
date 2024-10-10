@@ -25,6 +25,16 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterUpdate() {
 
+        Map<Id,Opportunity> opportunities = new Map<Id,Opportunity>();
+        for(Opportunity opp : this.triggerMapNew.values()) {
+            if (opp.StageName == 'Closed Won') {
+                opportunities.put(opp.Id, opp);
+            }
+        }
+        if (!opportunities.isEmpty()) {
+        PlannedSalesHelper.updateCarSalesByOpportunity(opportunities);
+        }
+
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
@@ -34,6 +44,18 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public override void afterDelete() {
+
+        Map<Id, Opportunity> opportunities = new Map<Id, Opportunity>();
+        for (Opportunity opp : this.triggerMapOld.values()) {
+            if (opp.StageName == 'Closed Won') {
+                opportunities.put(opp.Id, opp);
+            }
+        }
+
+        if (!opportunities.isEmpty()) {
+            PlannedSalesHelper.updateCarSalesByOpportunity(opportunities);
+        }
+
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
