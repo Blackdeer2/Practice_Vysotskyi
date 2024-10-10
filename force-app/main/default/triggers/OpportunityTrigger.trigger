@@ -2,6 +2,10 @@ trigger OpportunityTrigger on Opportunity (before insert, before update, after i
 
     OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
 
+    List<TriggerControl__c> tcList = [SELECT Switch__c FROM TriggerControl__c LIMIT 1];
+
+    if(tcList.size() > 0 && tcList[0].Switch__c == true){
+
         if( Trigger.isInsert ){
             if(Trigger.isBefore) {
                 handler.beforeInsert();
@@ -26,5 +30,6 @@ trigger OpportunityTrigger on Opportunity (before insert, before update, after i
                 handler.afterDelete();
             }
         }
+    }
 
 }
