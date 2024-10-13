@@ -12,11 +12,21 @@ public with sharing class OpportunityLineItemTriggerHandler extends TriggerHandl
     }
 
     public override void beforeInsert() {
-        OpportunityLineItemService.checkingOfReservedSoldCars(this.triggerMapNew);
+        try {
+            OpportunityLineItemService.checkingOfReservedSoldCars(this.triggerMapNew);
+        } catch (Exception e) {
+            System.debug('Exception in beforeInsert of OpportunityLineItemTriggerHandler: ' + e.getMessage());
+        }
     }
 
     public override void afterInsert() {
-        OpportunityLineItemService.checkingOfReservedSoldCars(this.triggerMapNew);
+        try {
+            OpportunityLineItemService.checkingOfReservedSoldCars(this.triggerMapNew);
+        } catch (DmlException e) {
+            System.debug('DML Exception in afterInsert of OpportunityTriggerHandler: ' + e.getMessage());
+        } catch (Exception e) {
+            System.debug('Exception in afterInsert of OpportunityTriggerHandler: ' + e.getMessage());
+        }
     }
 
     public override void beforeUpdate() {

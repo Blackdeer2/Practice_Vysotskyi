@@ -1,7 +1,11 @@
 public with sharing class OpportunityService {
 
 
+
     public static void automateCarStatus(Map<Id,Opportunity> opportunityMap, Map<Id, Opportunity> opportunityOldMap){
+
+         string soldRecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Product2' AND DeveloperName = 'Sold'].Id;
+         string forSalesRecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Product2' AND DeveloperName = 'For_Sale'].Id;
 
         if (opportunityMap.isEmpty()) {
             return;
@@ -26,13 +30,13 @@ public with sharing class OpportunityService {
                         car.Car_Status__c = 'Reserved';
                     } else if (newStage == 'Closed Won') {
                         car.Car_Status__c = 'Sold';
-                        car.RecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Product2' AND DeveloperName = 'Sold'].Id;
+                        car.RecordTypeId = soldRecordTypeId;
                     } else if (newStage == 'Closed Lost') {
                         car.Car_Status__c = 'Available';
-                        car.RecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Product2' AND DeveloperName = 'For_Sale'].Id;
+                        car.RecordTypeId = forSalesRecordTypeId;
                     } else if (oldStage == 'Contract Sent' && newStage != 'Closed Won' && newStage != 'Closed Lost') {
                         car.Car_Status__c = 'Available';
-                        car.RecordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = 'Product2' AND DeveloperName = 'For_Sale'].Id;
+                        car.RecordTypeId = forSalesRecordTypeId;
                     }
                     carsToUpdate.add(car);
 

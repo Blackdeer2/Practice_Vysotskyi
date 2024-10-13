@@ -22,24 +22,30 @@ public with sharing class PlannedSalesHelper {
         Double totalAmountEarned;
 
 
-        for (Planned_Sales__c ps : plannedSalesMap.values()) {
+        Savepoint sp = Database.setSavepoint();
+        try{
+            for (Planned_Sales__c ps : plannedSalesMap.values()) {
 
-             countOfCarsSold = 0; 
-             totalAmountEarned = 0.0;
+                countOfCarsSold = 0; 
+                totalAmountEarned = 0.0;
 
-            for (OpportunityLineItem opp : oppLineItems) {
+                for (OpportunityLineItem opp : oppLineItems) {
 
-                System.debug('Processing OpportunityLineItem: ' + opp.Id);
+                    System.debug('Processing OpportunityLineItem: ' + opp.Id);
 
-                if ( dateComparison(ps.Year__c, ps.Month__c, opp.Opportunity.CloseDate) && opp.Product2.Condition__c == ps.Car_Type__c) {
+                    if ( dateComparison(ps.Year__c, ps.Month__c, opp.Opportunity.CloseDate) && opp.Product2.Condition__c == ps.Car_Type__c) {
 
-                    countOfCarsSold++;
-                    totalAmountEarned += opp.Opportunity.Amount;
+                        countOfCarsSold++;
+                        totalAmountEarned += opp.Opportunity.Amount;
+                    }
                 }
-            }
-            ps.Count_of_Cars_Sold__c = (countOfCarsSold > 0) ? countOfCarsSold : 0;
-            ps.Total_Amount_Earned__c = (totalAmountEarned > 0) ? totalAmountEarned : 0;
+                ps.Count_of_Cars_Sold__c = (countOfCarsSold > 0) ? countOfCarsSold : 0;
+                ps.Total_Amount_Earned__c = (totalAmountEarned > 0) ? totalAmountEarned : 0;
 
+            }
+        }catch(Exception e){
+
+            Database.rollback(sp);
         }
     }
 
@@ -85,7 +91,7 @@ public with sharing class PlannedSalesHelper {
             
             for (OpportunityLineItem oli : oppLineItems) {
 
-                opportunitykey = oli.Opportunity.CloseDate.year() + '-' + oli.Opportunity.CloseDate.month() + '-' + oli.Product2.Condition__c; // переписати інт в стрінг
+                opportunitykey = String.valueOf(oli.Opportunity.CloseDate.year()) + '-' + String.valueOf(oli.Opportunity.CloseDate.month()) + '-' + oli.Product2.Condition__c;
 
                 
                 if (plannedSalesMap.containsKey(opportunitykey)) {
