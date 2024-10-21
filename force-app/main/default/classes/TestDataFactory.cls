@@ -13,7 +13,7 @@ public class TestDataFactory {
         insert acc;
         return acc;
     }
-	public static Product2 createCar(String name, String brand, String model, String vinNumber, String condition, Decimal mileage,  Boolean doInsert) {
+	public static Product2 createCar(String name, String brand, String model, String vinNumber, String condition, Decimal mileage) {
         Product2 car = new Product2();
         // car.Name = 'BMW X5';
         // car.Brand__C = 'BMW';
@@ -27,9 +27,7 @@ public class TestDataFactory {
         car.VIN_Number__c = vinNumber;
         car.Condition__c = condition;
         car.Mileage__c = mileage;
-		if(doInsert) {
-			insert car;
-		}
+		insert car;
 		return car;
 	}
 
@@ -68,5 +66,32 @@ public class TestDataFactory {
             insert plannedSales;
         }
         return plannedSales;
+    }
+
+    public static Case createCase(String subject, String description, String carVinCode){
+        Case testCase = new Case();
+        testCase.Subject = subject;
+        testCase.Description = description;
+        testCase.CarVinCode__c = carVinCode;
+
+        insert testCase;
+        return testCase;
+    }
+    
+    public static Case createCaseWeb(){
+        
+        Case testCase = new Case();
+        testCase.SuppliedName = 'Vova';
+        testCase.SuppliedEmail = 'vov@gmail.com';
+        testCase.SuppliedPhone = '123456789';
+        testCase.CarBrand__c = 'BMW';
+        testCase.CarModel__c ='X5';
+        testCase.CarVinCode__c = 'WBANV13578CZ74051';
+        testCase.Subject = 'Service Request';
+        testCase.Description = 'Test case description';
+        
+       insert testCase;
+       return testCase;
+        
     }
 }

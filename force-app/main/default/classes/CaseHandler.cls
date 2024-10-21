@@ -22,7 +22,27 @@ public with sharing class CaseHandler extends TriggerHandler  {
 
     public override void afterInsert() {
         try {
-            CaseService.autoCreateCarService(this.triggerMapNew);
+            
+            Boolean isEmailCase = false;
+            Boolean isWebCase = false;
+            for (Case caseRecord : triggerNew) {
+                if (caseRecord.Origin != null && caseRecord.Origin.equalsIgnoreCase('Email')) {
+                    isEmailCase = true;
+                    break;
+                }                
+                if (caseRecord.Origin != null && caseRecord.Origin.equalsIgnoreCase('Web')) {
+                    isWebCase = true;
+                    break;
+                }
+            }
+
+            // If the case was created from an email, call handleNewCases
+            if (isEmailCase) {
+                CaseService.handleNewCases(this.triggerMapNew);
+            }
+            if (isWebCase) {
+                CaseService.autoCreateCarService(this.triggerMapNew);
+            }
         } catch (DmlException e) {
             System.debug('DML Exception in afterInsert of CaseHandler: ' + e.getMessage());
         } catch (Exception e) {
