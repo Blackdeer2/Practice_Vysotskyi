@@ -94,4 +94,14 @@ public class TestDataFactory {
        return testCase;
         
     }
+    
+    public static Case createCaseEmail(String subject, String description){
+        
+        Case caseEmail = new Case();
+        caseEmail.Subject = subject;
+        caseEmail.Description = description;
+        
+        insert caseEmail;
+        return caseEmail;
+    }
 }

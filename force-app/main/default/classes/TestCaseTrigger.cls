@@ -51,4 +51,32 @@ private class TestCaseTrigger {
         List<Car_Service__c> servicesForDifferentVin = [SELECT Id FROM Car_Service__c WHERE Case__c = :caseWithDifferentVin.Id];
         System.assertEquals(0, servicesForDifferentVin.size(), 'Car_Service__c should not be created for unknown VIN.');
     }
+    
+    @isTest
+    static void testHandleNewCases_Positive() {
+        
+        String name = 'BMW X5';
+        String brand = 'BMW';
+        String model = 'X5';
+        String vinNumber = 'WBANV13578CZ74051';
+        String condition ='New';
+        Decimal mileage = 0.0;
+        
+        Product2 testCar = TestDataFactory.createCar(name, brand, model, vinNumber, condition, mileage);
+        
+        String subject = 'Service Request VIN-WBANV13578CZ74051';
+        String description = 'Test case description.';
+        Case testcase = TestDataFactory.createCaseEmail(subject, description);
+        
+        Test.startTest();
+        CaseService.handleNewCases(new Map<Id, Case>{testcase.Id => testcase});
+        Test.stopTest();
+
+		List<Car_Service__c> createdServices = [SELECT Id, Name, Service_Name__c, Description__c, Car__c, Case__c FROM Car_Service__c WHERE Case__c = :testCase.Id]; 
+        
+        System.assertEquals(1, createdServices.size(), 'Should create one Car_Service__c record.');
+        System.assertEquals(testCar.Id, createdServices[0].Car__c, 'Car_Service__c should be linked to the correct car.');
+        System.assertEquals(testcase.Id, createdServices[0].Case__c, 'Case__c should be linked to the correct car.');
+        
+    }
 }
